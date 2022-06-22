@@ -5,6 +5,7 @@ import (
 	"fmt"
 	dyn "github.com/changsongl/go-wrk-dynamic/dynamic"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"os/signal"
 	"runtime"
@@ -73,6 +74,7 @@ func printDefaults() {
 }
 
 func main() {
+	rand.Seed(time.Now().Unix())
 	//raising the limits. Some performance gains were achieved with the + goroutines (not a lot).
 	runtime.GOMAXPROCS(runtime.NumCPU() + goroutines)
 
