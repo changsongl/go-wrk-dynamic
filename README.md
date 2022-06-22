@@ -3,11 +3,11 @@ go-wrk-dynamic - an HTTP benchmarking tool
 
 go-wrk is a modern HTTP benchmarking tool capable of generating significant load when run on a single multi-core CPU. It builds on go language go routines and scheduler for behind the scenes async IO and concurrency.
 
-This package has more features than others for dynamic path, body, etc.
+This package (fork from https://github.com/tsliwowicz/go-wrk) has more features than others for dynamic path, body, etc.
 
 --------
 
-    go get github.com/tsliwowicz/go-wrk
+    go get github.com/changsongl/go-wrk-dyncmic
 
 This will download and compile go-wrk. The binary will be placed under your $GOPATH/bin directory  
    

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	dyn "github.com/changsongl/go-wrk-dynamic/dynamic"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -10,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tsliwowicz/go-wrk/loader"
-	"github.com/tsliwowicz/go-wrk/util"
+	"github.com/changsongl/go-wrk-dynamic/loader"
+	"github.com/changsongl/go-wrk-dynamic/util"
 )
 
 const APP_VERSION = "0.9"
@@ -38,6 +39,7 @@ var clientCert string
 var clientKey string
 var caCert string
 var http2 bool
+var dynamic string
 
 func init() {
 	flag.BoolVar(&versionFlag, "v", false, "Print version details")
@@ -58,6 +60,7 @@ func init() {
 	flag.StringVar(&clientKey, "key", "", "Private key file name (SSL/TLS")
 	flag.StringVar(&caCert, "ca", "", "CA file to verify peer against (SSL/TLS)")
 	flag.BoolVar(&http2, "http", true, "Use HTTP/2")
+	flag.StringVar(&dynamic, "dynamic", "", "Dynamic path, body, etc.")
 }
 
 //printDefaults a nicer format for the defaults
@@ -112,6 +115,12 @@ func main() {
 		return
 	}
 
+	dy, err := dyn.NewDynamic(dynamic)
+	if err != nil {
+		fmt.Println(fmt.Errorf("could not parse dynamic parameters (%s): %s", err, dynamic))
+		os.Exit(1)
+	}
+
 	fmt.Printf("Running %vs test @ %v\n  %v goroutine(s) running concurrently\n", duration, testUrl, goroutines)
 
 	if len(reqBody) > 0 && reqBody[0] == '@' {
@@ -125,7 +134,7 @@ func main() {
 	}
 
 	loadGen := loader.NewLoadCfg(duration, goroutines, testUrl, reqBody, method, host, header, statsAggregator, timeoutms,
-		allowRedirectsFlag, disableCompression, disableKeepAlive, skipVerify, clientCert, clientKey, caCert, http2)
+		allowRedirectsFlag, disableCompression, disableKeepAlive, skipVerify, clientCert, clientKey, caCert, http2, dy)
 
 	for i := 0; i < goroutines; i++ {
 		go loadGen.RunSingleLoadSession()

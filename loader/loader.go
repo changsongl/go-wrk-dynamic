@@ -3,6 +3,7 @@ package loader
 import (
 	"bytes"
 	"fmt"
+	"github.com/changsongl/go-wrk-dynamic/dynamic"
 	"io"
 	"io/ioutil"
 	"log"
@@ -12,7 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/tsliwowicz/go-wrk/util"
+	"github.com/changsongl/go-wrk-dynamic/util"
 )
 
 const (
@@ -32,12 +33,13 @@ type LoadCfg struct {
 	allowRedirects     bool
 	disableCompression bool
 	disableKeepAlive   bool
-	skipVerify	 	   bool
+	skipVerify         bool
 	interrupted        int32
 	clientCert         string
 	clientKey          string
 	caCert             string
 	http2              bool
+	dyn                dynamic.Dynamic
 }
 
 // RequesterStats used for colelcting aggregate statistics
@@ -66,9 +68,10 @@ func NewLoadCfg(duration int, //seconds
 	clientCert string,
 	clientKey string,
 	caCert string,
-	http2 bool) (rt *LoadCfg) {
+	http2 bool,
+	dyn dynamic.Dynamic) (rt *LoadCfg) {
 	rt = &LoadCfg{duration, goroutines, testUrl, reqBody, method, host, header, statsAggregator, timeoutms,
-		allowRedirects, disableCompression, disableKeepAlive, skipVerify, 0, clientCert, clientKey, caCert, http2}
+		allowRedirects, disableCompression, disableKeepAlive, skipVerify, 0, clientCert, clientKey, caCert, http2, dyn}
 	return
 }
 
@@ -173,14 +176,14 @@ func (cfg *LoadCfg) RunSingleLoadSession() {
 	stats := &RequesterStats{MinRequestTime: time.Minute}
 	start := time.Now()
 
-	httpClient, err := client(cfg.disableCompression, cfg.disableKeepAlive, cfg.skipVerify, 
+	httpClient, err := client(cfg.disableCompression, cfg.disableKeepAlive, cfg.skipVerify,
 		cfg.timeoutms, cfg.allowRedirects, cfg.clientCert, cfg.clientKey, cfg.caCert, cfg.http2)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for time.Since(start).Seconds() <= float64(cfg.duration) && atomic.LoadInt32(&cfg.interrupted) == 0 {
-		respSize, reqDur := DoRequest(httpClient, cfg.header, cfg.method, cfg.host, cfg.testUrl, cfg.reqBody)
+		respSize, reqDur := DoRequest(httpClient, cfg.header, cfg.method, cfg.host, cfg.testUrl, cfg.dyn.Generate(dynamic.FieldTypeBody, cfg.reqBody))
 		if respSize > 0 {
 			stats.TotRespSize += int64(respSize)
 			stats.TotDuration += reqDur
