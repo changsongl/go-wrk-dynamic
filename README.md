@@ -13,7 +13,7 @@ This will download and compile go-wrk. The binary will be placed under your $GOP
    
 Command line parameters (./go-wrk -help)  
 	
-       Usage: go-wrk <options> <url>
+       Usage: go-wrk-dynamic <options> <url>
        Options:
         -H       Header to add to each request (you can define multiple -H flags) (Default )
         -M       HTTP method (Default GET)
@@ -23,6 +23,7 @@ Command line parameters (./go-wrk -help)
         -ca      CA file to verify peer against (SSL/TLS) (Default )
         -cert    CA certificate file to verify peer against (SSL/TLS) (Default )
         -d       Duration of test in seconds (Default 10)
+        -dynamic Dynamic path, body, etc.
         -f       Playback file name (Default <empty>)
         -help    Print help (Default false)
         -host    Host Header (Default )
@@ -37,7 +38,7 @@ Command line parameters (./go-wrk -help)
 Basic Usage
 -----------
 
-    ./go-wrk -c 80 -d 5  http://192.168.1.118:8080/json
+    ./go-wrk-dynamic -c 80 -d 5  http://192.168.1.118:8080/json
 
 This runs a benchmark for 5 seconds, using 80 go routines (connections)
 
