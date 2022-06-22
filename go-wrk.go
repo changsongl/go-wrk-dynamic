@@ -75,6 +75,7 @@ func printDefaults() {
 
 func main() {
 	rand.Seed(time.Now().Unix())
+	fmt.Println("go-wrk-dynamic")
 	//raising the limits. Some performance gains were achieved with the + goroutines (not a lot).
 	runtime.GOMAXPROCS(runtime.NumCPU() + goroutines)
 
