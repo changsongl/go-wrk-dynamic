@@ -51,6 +51,11 @@ func (f *format) ParseRule() (err error) {
 
 		return nil
 	case TypeOptionFromFile:
+		f.RuleFunc, err = NewOptionFile(f.Rule)
+		if err != nil {
+			return err
+		}
+
 		return nil
 	//case TypeRangeDouble:
 	//	fallthrough
