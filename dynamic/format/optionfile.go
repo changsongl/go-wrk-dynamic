@@ -43,7 +43,7 @@ func NewOptionFile(r interface{}) (Rule, error) {
 
 	contentSlice := strings.Split(string(content), "\n")
 
-	opt := &OptionFile{Options: contentSlice, Num: len(contentSlice), File: file}
+	opt := OptionFile{Options: contentSlice, Num: len(contentSlice), File: file}
 
 	return opt, nil
 }
